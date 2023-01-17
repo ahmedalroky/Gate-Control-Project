@@ -5,8 +5,8 @@
 RCSwitch mySwitch = RCSwitch();
 int greenLed = 13;
 int redLed = 12;
-int transmitPin = 3; // Specify the pin for transmitting
-int receivePin = 7; // Specify the pin for receiving
+int transmitPin = 10; // Specify the pin for transmitting
+int receivePin = 0; // Specify the pin for receiving
 bool codesStored = false;
 unsigned long receivedCode1, receivedCode2;
 int eepromAddress1 = 0, eepromAddress2 = 4;
@@ -44,6 +44,8 @@ void setup() {
   mySwitch.enableTransmit(transmitPin);
   mySwitch.enableReceive(receivePin);
   Serial.begin(9600);
+  mySwitch.enableTransmit(10);
+
 
 
   // Check if codes are already stored in EEPROM
@@ -57,13 +59,17 @@ void setup() {
 
 
 void loop() {
+
   if (codesStored) {
 if (Serial.available()) {
       int command = Serial.read();
       if (command == '1') {
-        mySwitch.send(receivedCode1); // Send "on" command
+        mySwitch.send(receivedCode1, 24); // Send "on" command
       } else if (command == '2') {
-        mySwitch.send(receivedCode2); // Send "off" command
+        mySwitch.send(receivedCode2, 24); // Send "off" command
+      } else if (command == '3') {
+        EEPROM.write(eepromAddress1,0xFF);
+        EEPROM.write(eepromAddress2,0xFF);
       }
     }
   } else {
@@ -79,10 +85,17 @@ if (Serial.available()) {
         delay(100);
         digitalWrite(redLed, LOW);
         delay(100);
+        digitalWrite(greenLed, HIGH);
+        delay(100);
+        digitalWrite(greenLed, LOW);
         digitalWrite(redLed, HIGH);
         delay(100);
         digitalWrite(redLed, LOW);
         delay(100);
+        digitalWrite(greenLed, HIGH);
+        delay(100);
+        digitalWrite(greenLed, LOW);
+        delay(10000);
         if (mySwitch.available()) {
           unsigned long value2 = mySwitch.getReceivedValue();
           if (value2 != 0) {
