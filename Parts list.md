@@ -3,6 +3,7 @@
 - Esp8266  
 - 433MHZ Module  
 - 2 Led  
+- 2 resistors 220OHM  
 - 1 Push Button  
 - USB TTL  
 - Bread Board  
